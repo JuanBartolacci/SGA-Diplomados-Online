@@ -1,4 +1,4 @@
-inport os
+import os
 from collections import deque
 
 class Persona:   # Super clase, de esta se va a derivar estudiantes y profesores
