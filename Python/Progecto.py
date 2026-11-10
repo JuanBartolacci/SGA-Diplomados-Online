@@ -131,3 +131,72 @@ class SistemaGestion:
                              f.write(profesor.a_string_archivo())
                 except Exception as e:
                      print(f"Error al guardar profesores: {e}")                                   
+
+def registrar_alumno(self):     # metodo para registrar alumno por medio de inputs en consola
+     print("/n--- Registrar Alumno ---")
+     cedula = input("Ingrese su CI: ").strip()
+     if any(a.cedula == cedula for a in self.alumnos):   # Evita duplicados por numero de Cedula
+          print("Ya hay un alumno con esa Cedula registado.")
+          return
+     nombre = input("Nombre completo: ").strip()
+     correo = input ("Correo electrónico: ").strip()
+     print("Programas académicos displonibles: Curso, Diplomado, Bootcamp")
+     tipo_programa = input("Tipo de Programa: ").strip().capitalize()
+     if tipo_programa not in ["Curso", "Diplomado", "Bootcamp"]:   # metodo en caso de que la opcion seleccionada no este disponible
+          print(" Programa Académico no reconocido. Inscribiendo en 'Curso' por defecto.")
+          tipo_programa = "Curso"
+
+nuevo_alumno = Alumno(cedula, nombre, correo, tipo_programa)
+self.alumnos.append(nuevo_alumno)
+self.guardar_alumnos()
+print("Alumno registrado con éxito.")
+
+def registrar_profesor(self):
+     print("/n--- Registrar Profesor ---")
+     cedula = input("Cédula: ").strip()
+     if any(p.cedula == cedula for p in self.profesores):
+          print(" Ya existe un profesor registrado con esa Cédula.") #Evitamos duplicados
+          return
+     nombre = input("Nombre Completo: ").strip()
+     correo = input("Correo Electrónico: ").strip()
+     especialidad = input("Especialidad: ").strip()
+     materia = input("Materia: ").strip()
+
+nuevo_profesor = Profesor(cedula, nombre, correo, especialidad, materia)
+self.profesores.append(nuevo_profesor)
+self.guardar_profesores()
+print("Profesor registrado con éxito")
+
+def registrar_nota(self):   # Metodo para registrar notas de alumno
+     print("/n--- Registrar Nota ---")       
+     cedula = input("Ingrese la Cédula del Alumno: ").strip()     # input en consola para la busqueda
+     alumno = next((a for a in self.alumnos if a.cedula == cedula),None)  # busqueda de alumno con expresion next (verifica dentro de la lista) si no encuentra devuelve None
+
+     if not alumno:         #En caso de no encontrart en la lista hacemos print del error1
+          print(" Alumno no encontrado en el sistema.")
+          return
+
+     if len(alumno.notas) >= 3:   # Verificacion en caso de intentar registrar mas de 3 notas
+          print("Límite de notas registrado (3).")
+          return
+
+     try:
+          nota= float(input)f"ingrese la calificación para {alumno.nombre} (0 a 20): "))  # input para ingresar nota
+          if not (0 <= nota <= 20):   # filtro para evitar numeros o caracteres invalidos
+               print("La nota debe de estar entre 0 y 20.")
+               returnexcept ValueError:
+               print(" Por favor ingresar un valor válido.")
+               return
+
+          alumno.notas.append(nota) # agregamos notas
+          self.pila_notas.append((cedula, nota)) # Pila LIFO (undo action)
+          self.guardar_alumnos()
+          print(f"Nota de {nota} registrada para a {alumno.nombre}.")
+
+          def deshacer_ultimo_registro_nota(self):
+               print("/n--- Deshacer último registro de nota ---")
+               if not self.pila_notas:        # sin acciones guardadas, hacemos print del error
+                    print("No hay registtro de notas para deshacer.")
+                    return
+
+               
