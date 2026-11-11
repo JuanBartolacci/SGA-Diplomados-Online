@@ -208,7 +208,7 @@ def registrar_nota(self):   # Metodo para registrar notas de alumno
                else:                                                                                 
                     print("No se pudo localizar el registro exacto en el alumno correspondiente")      #print de error en vez de romper el programa
 
-                    def grnerar_cola_certificados(self):
+                    def generar_cola_certificados(self):
                          print("/n--- Generar Cola de Certificados---")
                          cola_certificados = deque()   # Cola first in first out
                          for alumno in self.alumnos:
@@ -249,6 +249,76 @@ f.write(f"{contador}. [{graduando.cedula}] {graduando.nombre}\n")
             print(f"Cola procesada con éxito. Archivo generado: '{self.archivo_certificados}'.")
         except Exception as e:   # Este bloque atrapa la excepcion (cualquier tipo de error) y muestra el mensaje en el terminal
             print(f"Error al exportar certificados: {e}")
+
+def mostrar_reporte_general(self):
+     print("/n" + "=*50")
+     print ("Reporte General: Diplomados Online")
+     print("="*50)
+
+     print("/n--- Profersores Activos ---")
+     if not self.profersores:                    # en caso de no haber registrado profersores aun
+          print("No hay profersores registrados.")
+     else:
+          for p in self.profesores:
+               print(f" Cédula: {p.cedula} | Nombre: {p.nombre} | correo: {p.correo} | Especialidad: {p.especialidad} | Materia: {p.materia}")
+
+               print("/n--- Alumnos Registrados ---")
+               if not self.alumnos:
+                    print("No hay alumnos registrados.")
+               else:
+                    for a in self.alumnos:
+                         a.evaluar_aprobacion()
+                         promedio = a.calcular_promedio()
+                         notas_str = ", ". join(map(str, a.notas)) if a.notas else "Sin notas"  # para  evitar el error TypeError, con map exigimos que todo sea cadena de txt (str)
+                         print(f"Cédula: {a.cedula} | Nombre: {a.nombre} | Promedio {promedio:.1f} | Estatus: {a.estatus}")
+                         print("="*50)
+
+
+                         def ejecutar(self):    # terminal
+                              while True:
+                                   print("/n" + "==*50")
+                                   print("SGA-DO: Sistema Diplomados Online")
+                                   print("="*50)
+                                   print("1. Registrar Alumno")
+                                   print("2. Registrar Profersor")
+                                   print("3. Registrar Notas")
+                                   print("4. Deshacer Último Registro")
+                                   print("5. Generar Lista de Certificados")
+                                   print("6. Mostrar Reporte General")
+                                   print("7. Salir")
+                                   print("="*50)     #repetimos cadena x50
+
+                                   opcion = input("Seleccione una opción (1 - 7): ").strip()
+
+                                   if opcion == "1":                      #  cadena "else - if" para seleccionar la opcion desde el terminal
+                                        self.registrar_alumno()
+                                   elif opcion == "2":
+                                        self.registrar_profersor()
+                                   elif opcion_ == "3":
+                                        self.registrar_nota()
+                                   elif opcion == "4":
+                                        self.deshacer_ultimo_registro_nota()
+                                   elif opcion == "5":
+                                        self.generar_cola_certificados()
+                                   elif opcion == "6":
+                                        self.mostrar_reporte_general()
+                                   elif opcion == "7"
+                                        print("/nGuardando cambios pendientes y cerrando la aplicación.")
+                                        self.guardar_alumnos()
+                                        print(" Hasta luego!")
+                                        break                    # rompemos el ciclo while, no saldra el menu nuevamente al salier (opcion 7) 
+                                   else:
+                                        print("Opción inválida. Por favor, seleccione un número entre el 1 y el 7.")
+
+                                        if_name__ == "__main__":
+                                        sistema = SistemaGestion()
+                                        sistema.ejecutar()
+                                        
+
+
+
+
+
 
 
 
