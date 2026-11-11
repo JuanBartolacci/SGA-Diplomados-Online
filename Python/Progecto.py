@@ -199,4 +199,61 @@ def registrar_nota(self):   # Metodo para registrar notas de alumno
                     print("No hay registtro de notas para deshacer.")
                     return
 
-               
+               cedula, nota_removida = selff.pila_notas.pop()  #extraer cima de la pila (LIFO)
+               alumno = next((a for in self.alumnos if a.cedula == cedula), None)
+               if alumno and nota_removida in alumno.notas:
+                    alumno.notas.remove(nota_removida)
+                    self.guardar_alumnos()
+                    print(f"Se removió la nota {nota_removida} del alumno {alumno.nombre}")
+               else:                                                                                 
+                    print("No se pudo localizar el registro exacto en el alumno correspondiente")      #print de error en vez de romper el programa
+
+                    def grnerar_cola_certificados(self):
+                         print("/n--- Generar Cola de Certificados---")
+                         cola_certificados = deque()   # Cola first in first out
+                         for alumno in self.alumnos:
+                              if alumno.evaluar_aprobacion():
+                                   cola_certificados.append(alumno)
+
+                                   self.guardar_alumnos()
+
+                                   if not cola_certificados()
+                                   print("No hay alumnos que cumplan con los criterios de aprobación en este momento.")
+                                   return
+
+                                   print(f"Procesando Cola de Certificados (Total candidatos:{len(cola_certificados)})...")
+                                   try:
+                                        with open(self.archivo_certificados, "w", encoding="utf-8") as f:
+
+                                              f.write("=========================================\n")
+                f.write("REPORTE DE CERTIFICADOS PENDIENTES\n")
+                f.write("=========================================\n")
+                f.write(f"Total de graduandos en cola: {len(cola_certificados)}\n")
+
+               contador = 1
+               while cola_certificados:        # Bucle While se mantiene activo mientras se encuentren procesos en cola         
+                    graduando = cola_certificados.popleft() #   FIFO
+                    regla_extra = " (Cumple regla de ninguna nota < 14)"  # destacar en el archivo txt  alumnos de Bootcamp que cumplieron con ;a exigencia académica
+                    if graduando.tipo_programa == "Bootcamp" else ""
+
+f.write(f"{contador}. [{graduando.cedula}] {graduando.nombre}\n")
+                    f.write(f"   - Programa: {graduando.tipo_programa}\n")
+                    f.write(f"   - Promedio Final: {graduando.calcular_promedio():.1f}\n")
+                    f.write(f"   - Estatus: APROBADO{regla_extra}\n")
+                    
+                    print(f" -> Procesado y agregado a cola: {graduando.nombre} ({graduando.tipo_programa})")
+                    contador += 1      #     sumar 1 al contador (para enumnerar al siguiente estudiante en el reporte de manera correcta)
+
+                       f.write("=========================================\n")
+                f.write("- Fin del reporte - Generado por SGA-DO *\n")
+            print(f"Cola procesada con éxito. Archivo generado: '{self.archivo_certificados}'.")
+        except Exception as e:   # Este bloque atrapa la excepcion (cualquier tipo de error) y muestra el mensaje en el terminal
+            print(f"Error al exportar certificados: {e}")
+
+
+
+
+
+
+
+
