@@ -1,0 +1,5 @@
+V-101,Ana Silva,ana@email.com,Curso,,Reprobado
+V-111,AnaSilva,ana@email.com,Curso,9.0,11.0,10.0,Aprobado
+V-202,CarlosPérez,carlos@email.com,Diplomado,14.0,14.0,13.0,Reprobado
+V-333,María Gómez,maria@email.com,Bootcamp,20.0,20.0,12.0,Reprobado
+V-444,Luis Rojas,luis@email.com,Bootcamp,14.0,15.0,14.0,Aprobado
