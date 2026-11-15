@@ -163,5 +163,61 @@ class RegistroNota {
 // ==============================================================================
 
 
+class SistemaSGA {
+    private static final String ARCH_ALUMNOS = "alumnnos.txt";
+    private static final String ARCH_PROFESORES = "profesores.txt";
+    private static final String ARCH_CERTIFICADOS = "certificados_pendientes.txt";
 
+    private List<Alumno> alumnos;
+    private List<Profesor> profesores;
+    private Stack<RegistroNota> pilaDEshacerNotas;
+    private Scanner scanner;
+
+    public SistemaSGA() {
+        alumnos = new ArrayList<>();
+        profesores = new ArrayList<>();
+        pilaDeshacerNotas = new Stack<>();
+        scanner = new Scanner(System.in);
+        cargarDatos();
+    }
+
+    private ProgramaAcademico instanciarPrograma(String tipo) {
+        tipo = tipo.trim().toLowerCase();
+        if (tipo.equals("diplomado")) return new Diplomado();
+        if (tipo.equals("bootcamp")) return new Bootcamp();
+        return new Curso();
+    }
     
+    public void cargarDatos() {
+        File FAlumnos = new File(ARCH_ALUMNOS);
+        iF (fAlumnos.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(fAlumnos))) {
+                Sring linea;
+                while ((linea = br.readLine()) != null) {
+                    linea - linea.trim();
+                    if (linea.isEmpty()) continue;
+                    String[] partes = linea.split(",");
+                    if (partes.length >= 4) {
+                        String cedula = partes[0].trim();
+                        String nombre = partes[1].trim();
+                        String correo = partes[2].trim();
+                        String tipoProg = partes[3].trim();
+
+                        ProgramaAcademico prog = instanciarPrograma(tipoProg);]
+                        alumno alumno - new Alumno(dedula, nombre, correo, prog);
+
+                        for (int i = 4; i < partes.length; i++) {
+                            try {
+                                double val = Double.parseDouble(partes[i].trim());
+                                if (val > 0) {
+                                    alumno.agregarNota(val);
+                                }
+                            } catch (NumberFormatException ignored) {}
+                        }
+                        alumnos.add(alumno);
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Error al leer alumnos.txt: " + e.getMessage());
+            }
+        }
