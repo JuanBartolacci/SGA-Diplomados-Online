@@ -98,7 +98,7 @@ class SistemaGestion:
                         partes = linea.split(",")
                         if len(partes) >= 6:
                             cedula, nombre, correo, tipo_programa, notas_str, estatus = partes[0], partes[1], partes[2], partes[3], partes[4], partes[5]
-                            notas = [float(n) for n in notas_str.split(",")] if notas_str else []
+                            notas = [float(n) for n in notas_str.split(",") if n.strip()][:3] if notas_str else []
                             self.alumnos.append(Alumno(cedula, nombre, correo, tipo_programa, notas, estatus))
             except Exception as e:
                 print(f"Error al cargar alumnos: {e}")
@@ -144,10 +144,11 @@ class SistemaGestion:
         nombre = input("Nombre completo: ").strip()
         correo = input("Correo electrónico: ").strip()
         print("Tipos de Programa disponibles: Curso, Diplomado, Bootcamp")
-        tipo_programa = input("Tipo de Programa: ").strip().capitalize()
-        if tipo_programa not in ["Curso", "Diplomado", "Bootcamp"]:
-            print(" Tipo no reconocido. Se guardará como 'Curso' por defecto.")
-            tipo_programa = "Curso"
+        while True:
+            tipo_programa = input("Tipo de Programa: ").strip().capitalize()
+            if tipo_programa in ["Curso", "Diplomado", "Bootcamp"]:
+                break
+            print(" Error: Tipo de programa no válido. Debe ingresar 'Curso', 'Diplomado' o 'Bootcamp'. Intente de nuevo.")
         
         nuevo_alumno = Alumno(cedula, nombre, correo, tipo_programa)
         self.alumnos.append(nuevo_alumno)
