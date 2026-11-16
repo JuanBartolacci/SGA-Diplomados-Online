@@ -190,11 +190,11 @@ class SistemaSGA {
     
     public void cargarDatos() {
         File FAlumnos = new File(ARCH_ALUMNOS);
-        iF (fAlumnos.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(fAlumnos))) {
-                Sring linea;
+        if (FAlumnos.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(FAlumnos))) {
+                String linea;
                 while ((linea = br.readLine()) != null) {
-                    linea - linea.trim();
+                    linea = linea.trim();
                     if (linea.isEmpty()) continue;
                     String[] partes = linea.split(",");
                     if (partes.length >= 4) {
@@ -203,8 +203,8 @@ class SistemaSGA {
                         String correo = partes[2].trim();
                         String tipoProg = partes[3].trim();
 
-                        ProgramaAcademico prog = instanciarPrograma(tipoProg);]
-                        alumno alumno - new Alumno(dedula, nombre, correo, prog);
+                        ProgramaAcademico prog = instanciarPrograma(tipoProg);
+                        Alumno alumno = new Alumno(cedula, nombre, correo, prog);
 
                         for (int i = 4; i < partes.length; i++) {
                             try {
@@ -220,4 +220,49 @@ class SistemaSGA {
             } catch (IOException e) {
                 System.out.println("Error al leer alumnos.txt: " + e.getMessage());
             }
+        }
+
+        File fProf = new File(ARCH_PROFESORES);
+        if (fProf.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(fProf))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    linea = linea.trim();
+                    if (linea.isEmpty()) continue;
+                    String[] partes = linea.split(",");
+                    if (partes.length >= 5) {
+                        String cedula = partes[0].trim();
+                        String nombre = partes[1].trim();
+                        String correo = partes[2].trim();
+                        String especialidad = partes[3].trim();
+                        StringBuilder materiaBuilder = new StringBuilder();
+                        for (int i = 4; i < partes.length; i++) {
+                            materiaBuilder.append(partes[i]);
+                            if (i < partes.length - 1) materiaBuilder.append(",");
+                        }
+                        Profesor prof = new Profesor(cedula, nombre, correo, especialidad, materiaBuilder.toString().trim());
+                        profesores.add(prof);
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Error al leer profesores.txt: " + e.getMessage());
+            }
+        }
+    }
+
+    public void guardarTodo() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_ALUMNOS))) {
+            for (Alumno a : alumnos) {
+                List<Double> notasCompletas = new ArrayList<>(a.getNotas());
+                while (notasCompletas.size() < 3) {
+                    notasCompletas.add(0.0);
+                }
+                pw.print(a.getCedula() + "," + a.getNombre() + "," + a.getCorreo() + "," + a.getPrograma().getNombre());
+                for (double n : notasCompletas) {
+                    pw.print("," + (n == (int)n ? String.format("%d", (int)n) : String.valueOf(n)));
+                }
+                pw.println();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar alumnos.txt: " + e.getMessage());
         }
