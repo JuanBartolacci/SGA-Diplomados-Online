@@ -266,3 +266,87 @@ class SistemaSGA {
         } catch (IOException e) {
             System.out.println("Error al guardar alumnos.txt: " + e.getMessage());
         }
+
+ public void guardarTodo() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_ALUMNOS))) {
+            for (Alumno a : alumnos) {
+                List<Double> notasCompletas = new ArrayList<>(a.getNotas());
+                while (notasCompletas.size() < 3) {
+                    notasCompletas.add(0.0);
+                }
+                pw.print(a.getCedula() + "," + a.getNombre() + "," + a.getCorreo() + "," + a.getPrograma().getNombre());
+                for (double n : notasCompletas) {
+                    pw.print("," + (n == (int)n ? String.format("%d", (int)n) : String.valueOf(n)));
+                }
+                pw.println();
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar alumnos.txt: " + e.getMessage());
+        }
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_PROFESORES))) {
+            for (Profesor p : profesores) {
+                pw.println(p.getCedula() + "," + p.getNombre() + "," + p.getCorreo() + "," + p.getEspecialidad() + "," + p.getMateria());
+            }
+        } catch (IOException e) {
+            System.out.println("Error al guardar profesores.txt: " + e.getMessage());
+        }
+    }
+    
+     public void registrarAlumno() {
+        System.out.println("\n--- Registrar Alumno ---");
+        System.out.print("Cédula / ID: ");
+        String cedula = scanner.nextLine().trim();
+
+        for (Alumno a : alumnos) {
+            if (a.getCedula().equalsIgnoreCase(cedula)) {
+                System.out.println("Error: Ya existe un alumno con esa cédula.");
+                return;
+            }
+        }
+
+        System.out.print("Nombre Completo: ");
+        String nombre = scanner.nextLine().trim();
+        System.out.print("Correo Electrónico: ");
+        String correo = scanner.nextLine().trim();
+        System.out.println("Tipo de Programa (1. Curso, 2. Diplomado, 3. Bootcamp): ");
+        String opc = scanner.nextLine().trim();
+
+        ProgramaAcademico prog;
+        if (opc.equals("2")) prog = new Diplomado();
+        else if (opc.equals("3")) prog = new Bootcamp();
+        else prog = new Curso();
+
+        Alumno nuevo = new Alumno(cedula, nombre, correo, prog);
+        alumnos.add(nuevo);
+        guardarTodo();
+        System.out.println("✓ Alumno registrado exitosamente.");
+    }
+
+    public void registrarProfesor() {
+        System.out.println("\n--- Registrar Profesor ---");
+        System.out.print("Cédula / ID: ");
+        String cedula = scanner.nextLine().trim();
+
+        for (Profesor p : profesores) {
+            if (p.getCedula().equalsIgnoreCase(cedula)) {
+                System.out.println("Error: Ya existe un profesor con esa cédula.");
+                return;
+            }
+        }
+
+        System.out.print("Nombre Completo: ");
+        String nombre = scanner.nextLine().trim();
+        System.out.print("Correo Electrónico: ");
+        String correo = scanner.nextLine().trim();
+        System.out.print("Especialidad (ej. Backend, Frontend): ");
+        String especialidad = scanner.nextLine().trim();
+        System.out.print("Materia Asignada: ");
+        String materia = scanner.nextLine().trim();
+
+        Profesor nuevo = new Profesor(cedula, nombre, correo, especialidad, materia);
+        profesores.add(nuevo);
+        guardarTodo();
+        System.out.println("✓ Profesor registrado exitosamente.");
+    }
+
