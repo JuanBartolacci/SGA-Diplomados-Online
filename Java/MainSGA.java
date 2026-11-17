@@ -454,12 +454,98 @@ class SistemaSGA {
                 contador++;
             }
             pw.println("=========================================");
-            pw.println("- Fin del reporty - Generado por SGA-DO *");
-            System.out.println("✓ Reporte generado exitosamente en '" + ARCH_CERTIFICADOS + "'.");
+            pw.println("- Fin del reporte  Generado por SGA-DO *");
+            System.out.println(" Reporte generado exitosamente en '" + ARCH_CERTIFICADOS + "'.");
         } catch (IOException e) {
             System.out.println("Error al escribir el archivo de certificados: " + e.getMessage());
         }
     }
+
+    public void mostrarReporteGeneral() {
+        System.out.println("\n" + "=".repeat(50));
+        System.out.println("Reporte General - Diplomados Online");
+        System.out.println("=".repeat(50));
+        System.out.println("/n[PROFESORES]");
+        if (profesores.isEmpty()) {
+            System.out.println("Sin registros.");
+        }
+        for (Profesor p : profesores) {
+            System.out.println("- " + p.getCedula() + "," + p.getNombre() + "," + p.getCorreo() + "," + p.getEspecialidad() + "," + p.getMateria());
+        }
+        System.out.println("\n[ALUMNOS]");
+        if (alumnos.isEmpty()) {
+            System.out.println("Sin registros.");
+        }
+        for (Alumno a : alumnos) {
+            List<Double> notasCompletas = new ArrayList<>(a.getNotas());
+            while (notasCompletas.size() < 3) {
+                notasCompletas.add(0.0);
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < notasCompletas.size(); i++) {
+                double n = notasCompletas.get(i);
+                sb.append(n == (int)n ? (int)n : n);
+                if (i < notasCompletas.size() - 1) sb.append(",");
+            }
+            System.out.println("- " + a.getCedula() + "," + a.getNombre() + "," + a.getCorreo() + "," + a.getPrograma().getNombre() + "," + sb.toString());
+        }
+        System.out.println("=".repeat(50));
+    }
+
+    public void iniciar() {
+        while (true) {
+            System.out.println("\n" + "=".repeat(50));
+            System.out.println("SGA-DO: SISTEMA DIPLOMADOSONLINE");
+            System.out.println("=".repeat(50));
+            System.out.println("1. Registrar Alumno");
+            System.out.println("2. Registrar Profesor");
+            System.out.println("3. Registrar Notas a un Alumno");
+            System.out.println("4. Deshacer Último Registro de Nota");
+            System.out.println("5. Generar Cola de Certificados");
+            System.out.println("6. Mostrar Reporte General");
+            System.out.println("7. Salir");
+            System.out.println("=".repeat(50));
+            System.out.print("Seleccione una opción (1-7): ");
+
+            String opcion = scanner.nextLine().trim();
+
+            switch (opcion) {
+                case "1":
+                    registrarAlumno();
+                    break;
+                case "2":
+                    registrarProfesor();
+                    break;
+                case "3":
+                    registrarNota();
+                    break;
+                case "4":
+                    deshacerUltimaNota();
+                    break;
+                case "5":
+                    generarColaCertificados();
+                    break;
+                case "6":
+                    mostrarReporteGeneral();
+                    break;
+                case "7":
+                    guardarTodo();
+                    System.out.println("\nGuardando y saliendo de forma segura. ¡Hasta pronto!");
+                    return;
+                default:
+                    System.out.println("Opción inválida. Intente de nuevo.");
+            }
+        }
+    }
+}
+
+public class MainSGA {
+    public static void main(String[] args) {
+        SistemaSGA sistema = new SistemaSGA();
+        sistema.iniciar();
+    }
+}
+
 
 
 
