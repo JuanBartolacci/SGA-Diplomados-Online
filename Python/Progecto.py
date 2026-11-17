@@ -49,14 +49,22 @@ class Alumno(Persona):
         else:
             return Curso()
 
+    def _obtener_notas_completas(self):
+        """Rellena con 0.0 las notas faltantes hasta completar las 3 requeridas por defecto."""
+        notas_completas = list(self.notas)
+        while len(notas_completas) < 3:
+            notas_completas.append(0.0)
+        return notas_completas
+
     def calcular_promedio(self):
-        if not self.notas:
-            return 0.0
-        return sum(self.notas) / len(self.notas)
+        # Calcula el promedio siempre sobre las 3 notas obligatorias (las faltantes valen 0)
+        notas_completas = self._obtener_notas_completas()
+        return sum(notas_completas) / len(notas_completas)
 
     def evaluar_aprobacion(self):
-        # Aplica polimorfismo llamando a la regla específica del programa
-        if self._estrategia_programa.evaluar(self.notas):
+        # Evalúa utilizando las notas completas con ceros en las casillas vacías
+        notas_completas = self._obtener_notas_completas()
+        if self._estrategia_programa.evaluar(notas_completas):
             self.estatus = "Aprobado"
             return True
         else:
