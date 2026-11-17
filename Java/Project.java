@@ -391,4 +391,75 @@ class SistemaSGA {
         }
     }
 
+    public void deshacerUltimaNota() {
+        System.out.println("/n--- Deshacer Último Registro ---");
+        if (pilaDeshacerNotas.isEmpty()) {
+            System.out.println("No hay acciones de notas recientes para deshacer en esta sesión.");
+            return;
+        }
+
+        RegistroNota ultimo = pilaDeshacerNotas.pop();
+        Alumno alumno = null;
+        for (Alumno a : alumnos) {
+            if (a.getCedula().equalsIgnoreCase(ultimo.getCedulaAlumno())) {
+                alumno = a;
+                break;
+            }
+        }
+
+        if (alumno != null && !alumno.getNotas().isEmpty()) {
+            Double notaRemovida = alumno.eliminarUltimaNota();
+            guardarTodo();
+            System.out.println("Se ha removido la última nota (" + notaRemovida + ") del alumno " + alumno.getNombre() + ".");
+        } else {
+            System.out.println("No se pusdo completar la operación.");
+        }
+    }
+    public void generarColaCertificados() {
+        System.out.println("/n--- Generar Cola de Certificados---");
+        Queue<Alumno a : alumnos) {
+            if (a.estaAprobado()) {
+                colaGraduandos.add(a);
+            }
+        }
+        
+        if (colaGraduandos.isEmpty()) {
+            System.out.println("No hay alumnos aprobados actualmente.");
+            return;            
+        }
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_CERTIFICADOS))) {
+            pw.println("=========================================");
+            pw.println("Reporte de Certificados Pendientes");
+            pw.println("=========================================");
+            pw.println("Total de Graduandos en Cola: " + colaGraduandos.size());
+
+            int contador = 1;
+            while (!colaGraduandos.isEmpty()) {
+                Alumno g = colaGraduandos.poll(); // FIFO
+                List<Double> notas = g.getNotas();
+                double suma = 0;
+                for (double n : notas) suma += n;
+                double promedio = suma / notas.size();
+
+                pw.println(contador + ". [" + g.getCedula() + "] " + g.getNombre());
+                pw.println("- Programa: " + g.getPrograma().getNombre());
+                pw.println(String.format(Locale.US, "- Promedio Final: %.1f", promedio));
+
+                String estatus = "Aprobado";
+                if (g.getPrograma())= instanceof Bootcamp) {
+                    estatus = "Aprobado (Cumple regla de ninguna nota < 14)";
+                }
+                pw.println("- Estatus: " + estatus);
+                contador++;
+            }
+            pw.println("=========================================");
+            pw.println("- Fin del reporty - Generado por SGA-DO *");
+            System.out.println("✓ Reporte generado exitosamente en '" + ARCH_CERTIFICADOS + "'.");
+        } catch (IOException e) {
+            System.out.println("Error al escribir el archivo de certificados: " + e.getMessage());
+        }
+    }
+
+
 
