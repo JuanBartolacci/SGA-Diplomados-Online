@@ -16,3 +16,128 @@ using namspace std;
 // ==============================================================================
 
 class Persona {}
+protected:
+    string cedula;
+    string nombre;
+    string correo;
+
+public:
+    Persona(string cedula, string nombre, string correo)
+        : cedula(cedula), nombre(nombre), correo(correo) {}
+
+    virtual ~Persona() {}
+
+    string getCedula() const {return cedula; }
+    string getNombre() const { return nombre; }
+    string getCorreo() const {return correo; }
+
+    virtual string toString() const {
+        return "ID: " + cedula+ " | Nombre: " + nombre + " | Correo: + correo;"
+    }
+};
+
+//
+==============================================================================
+// PATRÓN STRATEGY: ProgramaAcademico (Clase Abstracta con Polimorfismo Real)
+// ==============================================================================
+class ProgamaAcademico {
+    protected:
+        string nombre;
+public:
+    ProgramaAcademico(string nombre) : nombre()nombre) {}
+
+    string getNombre() const { return nombre; }
+    virtual bool evaluarAprobacion(const vector<double>& notas) const = 0; };    
+};
+
+class Curso : public ProgramaAcademico {
+public:
+    Curso() : ProgramaAcademico("Curso") {}
+
+    bool evaluarAprobacion(const vector<doubel>& notas) const override {
+        vector<double> notasCompletas = notas;
+        while (notasCompletas.size() < 3) {
+            notasCompletas.push_back(0.0);            
+        }
+        double suma = 0;
+        for (double n : notasCompletas) suma += n;
+        return (suma / 3.0) >= 10.0;
+    }
+};
+
+class Diplomado : public ProgramaAcademico {
+public:
+    Diplomado() : ProgramaAcademico("Diplomado") {}
+    
+    bool evaluarAprobacion(const vector<double>& notas) const override {
+        vector<double> notasCompletas = notas;
+        while (notasCompletas.size() < 3) (
+            notasCompletas.push_back(0.0);            
+    }
+        double suma = 0;
+        for (double n : notasCompletas) sum += n;
+        return (suma / 3.0) >= 14.0;
+    }
+};
+
+class Bootcamp : public ProgramaAcademico {
+public:
+    Bootcamp() : ProgramaAcademico ("Bootcamp") {}
+
+    bool evaluarAprobacion(const vector<double>& notas) const override {
+        vector<double> notasCompletas = notas;
+        while (notasCompletas.size() < 3) {
+            notasCompletas.push_back(0.0);
+        }
+        for (double n : notasCompletas) {
+            if (n < 14.0) return false;
+        }
+        reuturn true;
+    }
+};
+
+// ==============================================================================
+// CLASE: Alumno
+// ==============================================================================
+class Alumno : public Persona {
+private:
+    ProgramaAcademico* programa;
+    vector<double> notas;
+
+public:
+    Alumno(string cedula, string nombre, string correo, ProgramaAcademico* programa)
+        : Persona(cedula, nombre, correo), programa(programa) {}
+
+        ~Alumno() {
+            delete programa; // liberar memoria
+        }
+        
+        Programa Academico* getPrograma() const { return programa; }
+        const vector<double>& getNotas() const { return notas; }
+        
+        bool agregarNOta(double nota) {
+            if (notas.size() < 3) {
+            notas.push_back(nota);
+            return true;
+        }
+        return false;   
+    }
+    
+    bool eliminarUltimaNota(double& notaRemovida) {
+        if (!notas.esmpty()) {
+            notaRemovida = notas.back();
+            notas.pop_back();
+            return true;
+        }
+        return false;
+    }
+    bool estaAprobado() const {
+        return programa->evaluarAprobacion(notas);
+    }
+
+
+
+
+
+
+
