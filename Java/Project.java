@@ -350,3 +350,45 @@ class SistemaSGA {
         System.out.println("✓ Profesor registrado exitosamente.");
     }
 
+    public void registrarNota() {
+        System.out.println("/n-- Registrar Notas ---");
+        System.out.print("Ingrese la Cédula del Alumno")
+        String cedula = scanner.nextLine().trim();
+
+        Alumno alumno = null;
+        for (Alumno a : alumnos) {
+            if (a.getCedula().equalsIgnoreCase(cedula)) {
+                alumno = a;
+                break;
+            }
+        }
+
+        if (alumno == null) {
+            System.out.println("Error: Alumno no encontrado.");
+            return;
+        }
+
+        if (alumno.getNotas().size() >= 3) {
+            System.out.println("Error: El alumno ya tiene sus 3 notas registradas.");
+            return;
+        }
+        
+        try {
+            System.out.print("Ingrese calificación (0-20) para " + alumno.getNombre() + ": ");
+            double nota = Double.parseDouble(scanner.nextLine().trim());
+            if (nota < 0 || nota > 20) {
+                System.out.println("Error: La nota debe estar ente 0 y 20.")
+                return;
+            }
+
+            if (alumno.agregarNota(nota)) {
+                pilaDeshacerNotas.push(new RegistroNota(alumno.getCedula(), nota));
+                guardarTodo();
+                System.out.println("Nota " + nota + " guardada correctamente.");                
+            }            
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Ingrese un valor numérico válido.");
+        }
+    }
+
+
