@@ -1,0 +1,14 @@
+=========================================
+Reporte de Certificados Pendientes
+=========================================
+Total de Graduandos en Cola: 2
+1. [V-111] Ana Silva
+- Programa: Curso
+- Promedio Final: 10.0
+- Estatus: Aprobado
+2. [V-444] Luis Rojas
+- Programa: Bootcamp
+- Promedio Final: 14.3
+- Estatus: Aprobado (Cumple regla de ninguna nota < 14)
+=========================================
+- Fin del reporte - Generado por SGA-DO *

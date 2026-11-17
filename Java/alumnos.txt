@@ -1,0 +1,4 @@
+V-111,Ana Silva,ana@email.com,Curso,10,11,9
+V-222,Carlos P�rez,carlos@email.com,Diplomado,14,13,14
+V-333,Mar�a G�mez,maria@email.com,Bootcamp,20,20,12
+V-444,Luis Rojas,luis@email.com,Bootcamp,14,15,14

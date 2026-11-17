@@ -10,18 +10,16 @@ class Persona {
         this.cedula = cedula;
         this.nombre = nombre;
         this.correo = correo;
-
     }
 
     public String getCedula() { return cedula; }
     public String getNombre() { return nombre; }
-    public String getCorreo() {return correo; }
+    public String getCorreo() { return correo; }
 
     @Override
     public String toString() {
         return "ID: " + cedula + " | Nombre: " + nombre + " | Correo: " + correo;
     }    
-    
 }
 
 abstract class ProgramaAcademico {
@@ -32,20 +30,22 @@ abstract class ProgramaAcademico {
     }
     public String getNombre() { return nombre; }
 
-    // metodo evaluado por las sublases3
-    public abstract boolean evaluarAprobacion(List<Double> notas);     
+    public abstract boolean evaluarAprobacion(List<Double> notas);    
 }
 
 class Curso extends ProgramaAcademico {
-        public Curso() { super("Curso"); }
+    public Curso() { super("Curso"); }
 
-        @Override
-        public boolean evaluarAprobacion(List<Double> notas) {
-            if (notas.size() < 3) return false;
-            double suma = 0;
-            for (double n : notas) suma += n;
-            return (suma / notas.size()) >= 10.0;   
+    @Override
+    public boolean evaluarAprobacion(List<Double> notas) {
+        List<Double> notasCompletas = new ArrayList<>(notas);
+        while (notasCompletas.size() < 3) {
+            notasCompletas.add(0.0);
         }
+        double suma = 0;
+        for (double n : notasCompletas) suma += n;
+        return (suma / notasCompletas.size()) >= 10.0;   
+    }
 }
 
 class Diplomado extends ProgramaAcademico {
@@ -53,19 +53,26 @@ class Diplomado extends ProgramaAcademico {
    
    @Override
    public boolean evaluarAprobacion(List<Double> notas) {
-    if (notas.size() < 3) return false;
-    double suma = 0;
-    for (double n : notas) suma += n;
-    return (suma / notas.size()) >=14.0;
+       List<Double> notasCompletas = new ArrayList<>(notas);
+       while (notasCompletas.size() < 3) {
+           notasCompletas.add(0.0);
+       }
+       double suma = 0;
+       for (double n : notasCompletas) suma += n;
+       return (suma / notasCompletas.size()) >= 14.0;
    }
 }
 
 class Bootcamp extends ProgramaAcademico {
-    public Bootcamp() {super("Bootcamp"); }
+    public Bootcamp() { super("Bootcamp"); }
+    
     @Override
     public boolean evaluarAprobacion(List<Double> notas) {
-        if (notas.size() < 3) return false;
-        for (double n : notas) {
+        List<Double> notasCompletas = new ArrayList<>(notas);
+        while (notasCompletas.size() < 3) {
+            notasCompletas.add(0.0);
+        }
+        for (double n : notasCompletas) {
             if (n < 14.0) return false;
         } 
         return true;
@@ -82,20 +89,18 @@ class Alumno extends Persona {
         this.notas = new ArrayList<>();
     }
     public ProgramaAcademico getPrograma() { return programa; }
-    public List<Double> getNotas() {return notas; }
+    public List<Double> getNotas() { return notas; }
 
     public boolean agregarNota(double nota) {
         if (notas.size() < 3) {
             notas.add(nota);
             return true;
-
         }
         return false;
-
     }
 
     public Double eliminarUltimaNota() {
-        if(!notas.isEmpty()) {
+        if (!notas.isEmpty()) {
             return notas.remove(notas.size() - 1);
         }
         return null;
@@ -112,10 +117,10 @@ class Alumno extends Persona {
             notasCompletas.add(0.0);
         }
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i < notasCompletas.size(); i++) {
+        for (int i = 0; i < notasCompletas.size(); i++) {
             double n = notasCompletas.get(i);
             sb.append(n == (int)n ? String.format("%d", (int)n) : String.format("%.1f" , n));
-            if (i < notasCompletas.size() -1) sb.append(", ");    
+            if (i < notasCompletas.size() - 1) sb.append(", ");    
         }
        String estado = estaAprobado() ? "APROBADO" : "EN PROCESO / REPROBADO";
         return "[Alumno] " + super.toString() + " | Programa: " + programa.getNombre() +
@@ -128,23 +133,20 @@ class Profesor extends Persona {
     private String materia;
 
     public Profesor(String cedula, String nombre, String correo, String especialidad, String materia) {
-    super(cedula,nombre, correo);
-    this.especialidad = especialidad;
-    this.materia = materia;    
+        super(cedula, nombre, correo);
+        this.especialidad = especialidad;
+        this.materia = materia;    
     }
 
-    public String getEspecialidad() {return especialidad;}
-    public String getMateria() {return materia; }
+    public String getEspecialidad() { return especialidad; }
+    public String getMateria() { return materia; }
 
     @Override
     public String toString() {
         return "[Profesor] " + super.toString() + " | Especialidad: " + especialidad + " | Materia: " + materia;
-
     }
-
 }
 
-//Comtrol pila last in first out
 class RegistroNota {
     private String cedulaAlumno;
     private double nota;
@@ -155,22 +157,17 @@ class RegistroNota {
     }
 
     public String getCedulaAlumno() { return cedulaAlumno; }
-    public double getNota() {return nota; }
+    public double getNota() { return nota; }
 }
 
-// ==============================================================================
-// MOTOR DEL SISTEMA SGA-DO Y GESTIÓN DE FLUJOS
-// ==============================================================================
-
-
 class SistemaSGA {
-    private static final String ARCH_ALUMNOS = "alumnnos.txt";
+    private static final String ARCH_ALUMNOS = "alumnos.txt";
     private static final String ARCH_PROFESORES = "profesores.txt";
     private static final String ARCH_CERTIFICADOS = "certificados_pendientes.txt";
 
     private List<Alumno> alumnos;
     private List<Profesor> profesores;
-    private Stack<RegistroNota> pilaDEshacerNotas;
+    private Stack<RegistroNota> pilaDeshacerNotas;
     private Scanner scanner;
 
     public SistemaSGA() {
@@ -267,23 +264,6 @@ class SistemaSGA {
             System.out.println("Error al guardar alumnos.txt: " + e.getMessage());
         }
 
- public void guardarTodo() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_ALUMNOS))) {
-            for (Alumno a : alumnos) {
-                List<Double> notasCompletas = new ArrayList<>(a.getNotas());
-                while (notasCompletas.size() < 3) {
-                    notasCompletas.add(0.0);
-                }
-                pw.print(a.getCedula() + "," + a.getNombre() + "," + a.getCorreo() + "," + a.getPrograma().getNombre());
-                for (double n : notasCompletas) {
-                    pw.print("," + (n == (int)n ? String.format("%d", (int)n) : String.valueOf(n)));
-                }
-                pw.println();
-            }
-        } catch (IOException e) {
-            System.out.println("Error al guardar alumnos.txt: " + e.getMessage());
-        }
-
         try (PrintWriter pw = new PrintWriter(new FileWriter(ARCH_PROFESORES))) {
             for (Profesor p : profesores) {
                 pw.println(p.getCedula() + "," + p.getNombre() + "," + p.getCorreo() + "," + p.getEspecialidad() + "," + p.getMateria());
@@ -293,7 +273,7 @@ class SistemaSGA {
         }
     }
     
-     public void registrarAlumno() {
+    public void registrarAlumno() {
         System.out.println("\n--- Registrar Alumno ---");
         System.out.print("Cédula / ID: ");
         String cedula = scanner.nextLine().trim();
@@ -309,18 +289,29 @@ class SistemaSGA {
         String nombre = scanner.nextLine().trim();
         System.out.print("Correo Electrónico: ");
         String correo = scanner.nextLine().trim();
-        System.out.println("Tipo de Programa (1. Curso, 2. Diplomado, 3. Bootcamp): ");
-        String opc = scanner.nextLine().trim();
 
         ProgramaAcademico prog;
-        if (opc.equals("2")) prog = new Diplomado();
-        else if (opc.equals("3")) prog = new Bootcamp();
-        else prog = new Curso();
+        while (true) {
+            System.out.println("Tipo de Programa (1. Curso, 2. Diplomado, 3. Bootcamp): ");
+            String opc = scanner.nextLine().trim();
+            if (opc.equals("1")) {
+                prog = new Curso();
+                break;
+            } else if (opc.equals("2")) {
+                prog = new Diplomado();
+                break;
+            } else if (opc.equals("3")) {
+                prog = new Bootcamp();
+                break;
+            } else {
+                System.out.println("Error: Opción no válida. Debe ingresar 1, 2 o 3.");
+            }
+        }
 
         Alumno nuevo = new Alumno(cedula, nombre, correo, prog);
         alumnos.add(nuevo);
         guardarTodo();
-        System.out.println("✓ Alumno registrado exitosamente.");
+        System.out.println("Alumno registrado exitosamente.");
     }
 
     public void registrarProfesor() {
@@ -347,12 +338,12 @@ class SistemaSGA {
         Profesor nuevo = new Profesor(cedula, nombre, correo, especialidad, materia);
         profesores.add(nuevo);
         guardarTodo();
-        System.out.println("✓ Profesor registrado exitosamente.");
+        System.out.println(" Profesor registrado exitosamente.");
     }
 
     public void registrarNota() {
-        System.out.println("/n-- Registrar Notas ---");
-        System.out.print("Ingrese la Cédula del Alumno")
+        System.out.println("\n--- Registrar Notas ---");
+        System.out.print("Ingrese la Cédula del Alumno: ");
         String cedula = scanner.nextLine().trim();
 
         Alumno alumno = null;
@@ -377,7 +368,7 @@ class SistemaSGA {
             System.out.print("Ingrese calificación (0-20) para " + alumno.getNombre() + ": ");
             double nota = Double.parseDouble(scanner.nextLine().trim());
             if (nota < 0 || nota > 20) {
-                System.out.println("Error: La nota debe estar ente 0 y 20.")
+                System.out.println("Error: La nota debe estar entre 0 y 20.");
                 return;
             }
 
@@ -392,7 +383,7 @@ class SistemaSGA {
     }
 
     public void deshacerUltimaNota() {
-        System.out.println("/n--- Deshacer Último Registro ---");
+        System.out.println("\n--- Deshacer Último Registro ---");
         if (pilaDeshacerNotas.isEmpty()) {
             System.out.println("No hay acciones de notas recientes para deshacer en esta sesión.");
             return;
@@ -412,12 +403,15 @@ class SistemaSGA {
             guardarTodo();
             System.out.println("Se ha removido la última nota (" + notaRemovida + ") del alumno " + alumno.getNombre() + ".");
         } else {
-            System.out.println("No se pusdo completar la operación.");
+            System.out.println("No se pudo completar la operación.");
         }
     }
+
     public void generarColaCertificados() {
-        System.out.println("/n--- Generar Cola de Certificados---");
-        Queue<Alumno a : alumnos) {
+        System.out.println("\n--- Generar Cola de Certificados ---");
+        Queue<Alumno> colaGraduandos = new LinkedList<>();
+        
+        for (Alumno a : alumnos) {
             if (a.estaAprobado()) {
                 colaGraduandos.add(a);
             }
@@ -437,25 +431,28 @@ class SistemaSGA {
             int contador = 1;
             while (!colaGraduandos.isEmpty()) {
                 Alumno g = colaGraduandos.poll(); // FIFO
-                List<Double> notas = g.getNotas();
+                List<Double> notasCompletas = new ArrayList<>(g.getNotas());
+                while (notasCompletas.size() < 3) {
+                    notasCompletas.add(0.0);
+                }
                 double suma = 0;
-                for (double n : notas) suma += n;
-                double promedio = suma / notas.size();
+                for (double n : notasCompletas) suma += n;
+                double promedio = suma / notasCompletas.size();
 
                 pw.println(contador + ". [" + g.getCedula() + "] " + g.getNombre());
                 pw.println("- Programa: " + g.getPrograma().getNombre());
                 pw.println(String.format(Locale.US, "- Promedio Final: %.1f", promedio));
 
                 String estatus = "Aprobado";
-                if (g.getPrograma())= instanceof Bootcamp) {
+                if (g.getPrograma() instanceof Bootcamp) {
                     estatus = "Aprobado (Cumple regla de ninguna nota < 14)";
                 }
                 pw.println("- Estatus: " + estatus);
                 contador++;
             }
             pw.println("=========================================");
-            pw.println("- Fin del reporte  Generado por SGA-DO *");
-            System.out.println(" Reporte generado exitosamente en '" + ARCH_CERTIFICADOS + "'.");
+            pw.println("- Fin del reporte - Generado por SGA-DO *");
+            System.out.println("✓ Reporte generado exitosamente en '" + ARCH_CERTIFICADOS + "'.");
         } catch (IOException e) {
             System.out.println("Error al escribir el archivo de certificados: " + e.getMessage());
         }
@@ -465,7 +462,7 @@ class SistemaSGA {
         System.out.println("\n" + "=".repeat(50));
         System.out.println("Reporte General - Diplomados Online");
         System.out.println("=".repeat(50));
-        System.out.println("/n[PROFESORES]");
+        System.out.println("\n[PROFESORES]");
         if (profesores.isEmpty()) {
             System.out.println("Sin registros.");
         }
@@ -545,7 +542,3 @@ public class MainSGA {
         sistema.iniciar();
     }
 }
-
-
-
-
