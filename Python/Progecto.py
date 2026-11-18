@@ -72,8 +72,10 @@ class Alumno(Persona):
             return False
 
     def a_string_archivo(self):
-        notas_str = ",".join(map(str, self.notas)) if self.notas else ""
-        return f"{self.cedula},{self.nombre},{self.correo},{self.tipo_programa},{notas_str},{self.estatus}\n"
+        # Guarda limpiamente las 3 notas separadas por comas (formato estándar)
+        notas_completas = self._obtener_notas_completas()
+        notas_str = ",".join(map(str, notas_completas))
+        return f"{self.cedula},{self.nombre},{self.correo},{self.tipo_programa},{notas_str}\n"
 
 class Profesor(Persona):
     def __init__(self, cedula, nombre, correo, especialidad, materia):
@@ -104,10 +106,26 @@ class SistemaGestion:
                         if not linea:
                             continue
                         partes = linea.split(",")
-                        if len(partes) >= 6:
-                            cedula, nombre, correo, tipo_programa, notas_str, estatus = partes[0], partes[1], partes[2], partes[3], partes[4], partes[5]
-                            notas = [float(n) for n in notas_str.split(",") if n.strip()][:3] if notas_str else []
-                            self.alumnos.append(Alumno(cedula, nombre, correo, tipo_programa, notas, estatus))
+                        if len(partes) >= 4:
+                            cedula = partes[0].strip()
+                            nombre = partes[1].strip()
+                            correo = partes[2].strip()
+                            tipo_programa = partes[3].strip()
+                            
+                            notas = []
+                            for p in partes[4:]:
+                                p_clean = p.strip()
+                                if p_clean:
+                                    try:
+                                        val = float(p_clean)
+                                        if val > 0:
+                                            notas.append(val)
+                                    except ValueError:
+                                        pass
+                            
+                            alumno = Alumno(cedula, nombre, correo, tipo_programa, notas[:3])
+                            alumno.evaluar_aprobacion()
+                            self.alumnos.append(alumno)
             except Exception as e:
                 print(f"Error al cargar alumnos: {e}")
 
