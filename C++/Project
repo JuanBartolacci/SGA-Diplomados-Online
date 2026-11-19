@@ -312,9 +312,72 @@ public:
             }
         }
 
+        cout << "Nombre Completo: ";
+        getline(cin,nombre);
+        cout << "Correo Electrónico: ";
+        getline(cin, correo);
 
+        ProgramaAcademico* prog = nullptr;
+        while (true) {
+            cout << "Tipo de Programa (1. Curso, 2. Diplomado, 3. Bootcamp): ";
+            string opc;
+            getline(cin, opc);
+            if (opc == "1") {
+                prog = new Curso();
+                break;
+            } else if (opc == "2") {
+                prog = new Diplomado();
+                break;
+            } else if (opc == "3") {
+                prog = new Bootcamp();
+                break;
+            } else {
+                cout << "Error: Opción no válida. Debe ingresar 1, 2 o 3.\n";
+            }
+        }
 
-}
+        Alumno* nuevo = new Alumno(cedula, nombre, correo, prog);
+        alumnos.push_back(nuevo);
+        guardarTodo();
+        cout <<"Alumno registrado exitosament.\n";
+    }
+    
+    void registrarProfesor() {
+        cout <<"\n--- Registrar Profesor ---\n";
+        cout << "Cédula / ID: ";
+        getline(cin, cedula);
+
+        for (cosnt auto& p : profesores) {
+            if (p->getCedula() == cedula) {
+                cout << "Error: Ya existe un profesor con esa cédula.\n";
+                return;
+            }
+        }        
+        cout << "Nombre Completo: ";
+        getline(cin, nombre);
+        cout << "Correo Electrónico: ";
+        getline(cin, correo);
+        cout << "Materia Asignada: ";
+        getline(cin, materia);
+
+        Profesor* nuevo = new Profesor(cedula, nombre, correo, especialidad, materia);
+        profesores.push_back(nuevo);
+        guardarTodo();
+        cout << "Profesor registrado exitosamente.\n";
+    
+        void registrarNota() {
+            cout << "\n--- Registrar Notas ---\n";
+            cout << "Ingrese la Cédula del Alumno: ";
+        string cedula;
+        getline(cin, cedula);
+
+        Alumno* alumno = nullptr;
+        for (auto a : alumnos) {
+            if (a->getCedula() == cedula) {
+                alumno = a;
+                break;
+            }
+        }
 
 
 
