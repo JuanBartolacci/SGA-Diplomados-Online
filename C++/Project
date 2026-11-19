@@ -135,7 +135,186 @@ public:
         return programa->evaluarAprobacion(notas);
     }
 
+    string toString() const {
+        vector<double> notasCompletas = notas;
+        whie (notasCompletas.size() < 3) {
+            notasCompletas.push_back(0.0);            
+        }
+    stringstream ss;
+    for (size_t i = 0; i < notasCompletas.size(); i++) {
+        double n = notasCompletas[i];
+        if (n ==(int)n) {
+            ss << (int)n;            
+        } else {
+            ss << fixed << setprecision(1) << n;
+        }
+        if(i < notasCompletas.size() -1) ss <<",";
+    }     
+    string estado = estaAprobado() ? "APROBADO" : "EN PROCESO / REPROBADO";
+    return "[Alumno] " + Persona::toString() + " | Programa: " + programa->getNombre() +
+               " | Notas: [" + ss.str() + "] | Estatus: " + estado;
+    }
+};
 
+// ==============================================================================
+// CLASE: Profesor
+// ==============================================================================
+
+class Profesor : public Persona {
+private:
+    string especialidad;
+    string materia;
+
+public:
+    Profesor(string cedula, string nombre, string correo, string especialidad, string materia)
+        : Persona(cedula, nombre, correo), especialidad(especialidad), materia(materia) {}
+
+    string getEspecialidad() const { return especialidad; }
+    string getMateria() const { return materia; }
+
+    string toString() const override {
+        return "[Profesor] " + Persona::toString() + " | Especialidad: " + especialidad + " | Materia: " + materia;
+    }
+};
+
+// ==============================================================================
+// ESTRUCTURA PARA LA PILA DE DESHACER (LIFO)
+// ==============================================================================
+struct RegistroNota {
+    string cedulaAlumno;
+    double nota;
+};
+
+// ==============================================================================
+// MOTOR DEL SISTEMA: SistemaSGA
+// ==============================================================================
+class SistemaSGA {
+private:
+    const string ARCH_ALUMNOS = "alumnos.txt";
+    const string ARCH_PROFESORES = "profesores.txt";
+    const string ARCH_CERTIFICADOS = "certificados_pendientes.txt";
+
+    vector<Alumno*> alumnos;
+    vector<Profesor*> profesores;
+    stack<RegistroNota> pilaDeshacerNotas;
+
+    ProgramaAcademico* instanciarPrograma(string tipo) {
+        for (char& c : tipo) c = tolower(c);
+        if (tipo.find("diplomado") != string::npos) return new Diplomado();
+        if (tipo.find("bootcamp") != string::npos) return new Bootcamp();
+        return new Curso();
+    }
+    
+public:
+    SistemaSGA() {
+        cargarDatos();
+    }
+
+    ~SistemaSGA() {
+        // Limpieza de memoria dinámica para evitar fugas
+        for (auto a : alumnos) delete a;
+        for (auto p : profesores) delete p;
+    }
+
+    void cargarDatos() {
+        ifstream fAlumnos(ARCH_ALUMNOS);
+        if (fAlumnos.is_open()) {
+            string linea;
+             while (getline(fAlumnos, linea)) {
+                if (linea.empty()) continue;
+                stringstream ss(linea);
+                string cedula, nombre, correo, tipoProg;
+                
+                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') && 
+                    getline(ss, correo, ',') && getline(ss, tipoProg, ',')) {
+                    
+                    ProgramaAcademico* prog = instanciarPrograma(tipoProg);
+                    Alumno* alumno = new Alumno(cedula, nombre, correo, prog);
+
+                    string notaStr;
+                    while (getline(ss, notaStr, ',')) {
+                        try {
+                            double val = stod(notaStr);
+                            if (val > 0) {
+                                alumno->agregarNota(val);
+                            }
+                        } catch (...) {}
+                    }
+                    alumnos.push_back(alumno);
+                }
+            }
+            fAlumnos.close();
+        }
+
+        ifstream fProf(ARCH_PROFESORES);
+        if (fProf.is_open()) {
+            string linea;
+            while (getline(fProf, linea)) {
+                if (linea.empty()) continue;
+                stringstream ss(linea);
+                string cedula, nombre, correo, especialidad, materia;
+                
+                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') && 
+                    getline(ss, correo, ',') && getline(ss, especialidad, ',') &&
+                    getline(ss, materia)) {
+                    
+                    Profesor* prof = new Profesor(cedula, nombre, correo, especialidad, materia);
+                    profesores.push_back(prof);
+                }
+            }
+            fProf.close();
+        }
+    }
+
+    void guardarTodo() {
+        // Persistencia para Alumnos (escribe exactamente las 3 notas rellenando con ceros si faltan)
+        ofstream fAlumnos(ARCH_ALUMNOS);
+        if (fAlumnos.is_open()) {
+            for (const auto& a : alumnos) {
+                vector<double> notasCompletas = a->getNotas();
+                while (notasCompletas.size() < 3) {
+                    notasCompletas.push_back(0.0);
+                }
+                fAlumnos << a->getCedula() << "," << a->getNombre() << "," 
+                         << a->getCorreo() << "," << a->getPrograma()->getNombre();
+                for (double n : notasCompletas) {
+                    fAlumnos << ",";
+                    if (n == (int)n) fAlumnos << (int)n;
+                    else fAlumnos << n;
+                }
+                fAlumnos << "\n";
+            }
+            fAlumnos.close();
+        }
+
+        // Persistencia para Profesores
+        ofstream fProf(ARCH_PROFESORES);
+        if (fProf.is_open()) {
+            for (const auto& p : profesores) {
+                fProf << p->getCedula() << "," << p->getNombre() << "," 
+                      << p->getCorreo() << "," << p->getEspecialidad() << "," 
+                      << p->getMateria() << "\n";
+            }
+            fProf.close();
+        }
+    }
+
+    void registrarAlumno() {
+        cout << "\n--- Registrar Alumno ---\n";
+        string cedula, nombre, correo;
+        cout << "Cédula / ID: ";
+        getline(cin, cedula);
+
+        for (const auto& a : alumnos) {
+            if (a->getCedula() == cedula) {
+                cout << "Error: Ya existe un alumno con esa cédula.\n";
+                return;
+            }
+        }
+
+
+
+}
 
 
 
