@@ -7,15 +7,14 @@
 #include <queue>
 #include <algorithm>
 #include <iomanip>
-#include <locales>
+#include <locale>
 
-using namspace std;
+using namespace std;
 
 // ==============================================================================
 // CLASE BASE: Persona
 // ==============================================================================
-
-class Persona {}
+class Persona {
 protected:
     string cedula;
     string nombre;
@@ -27,37 +26,38 @@ public:
 
     virtual ~Persona() {}
 
-    string getCedula() const {return cedula; }
+    string getCedula() const { return cedula; }
     string getNombre() const { return nombre; }
-    string getCorreo() const {return correo; }
+    string getCorreo() const { return correo; }
 
     virtual string toString() const {
-        return "ID: " + cedula+ " | Nombre: " + nombre + " | Correo: + correo;"
+        return "ID: " + cedula + " | Nombre: " + nombre + " | Correo: " + correo;
     }
 };
 
-//
-==============================================================================
+// ==============================================================================
 // PATRÓN STRATEGY: ProgramaAcademico (Clase Abstracta con Polimorfismo Real)
 // ==============================================================================
-class ProgamaAcademico {
-    protected:
-        string nombre;
+class ProgramaAcademico {
+protected:
+    string nombre;
+
 public:
-    ProgramaAcademico(string nombre) : nombre()nombre) {}
+    ProgramaAcademico(string nombre) : nombre(nombre) {}
+    virtual ~ProgramaAcademico() {}
 
     string getNombre() const { return nombre; }
-    virtual bool evaluarAprobacion(const vector<double>& notas) const = 0; };    
+    virtual bool evaluarAprobacion(const vector<double>& notas) const = 0;
 };
 
 class Curso : public ProgramaAcademico {
 public:
     Curso() : ProgramaAcademico("Curso") {}
 
-    bool evaluarAprobacion(const vector<doubel>& notas) const override {
+    bool evaluarAprobacion(const vector<double>& notas) const override {
         vector<double> notasCompletas = notas;
         while (notasCompletas.size() < 3) {
-            notasCompletas.push_back(0.0);            
+            notasCompletas.push_back(0.0);
         }
         double suma = 0;
         for (double n : notasCompletas) suma += n;
@@ -68,21 +68,21 @@ public:
 class Diplomado : public ProgramaAcademico {
 public:
     Diplomado() : ProgramaAcademico("Diplomado") {}
-    
+
     bool evaluarAprobacion(const vector<double>& notas) const override {
         vector<double> notasCompletas = notas;
-        while (notasCompletas.size() < 3) (
-            notasCompletas.push_back(0.0);            
-    }
+        while (notasCompletas.size() < 3) {
+            notasCompletas.push_back(0.0);
+        }
         double suma = 0;
-        for (double n : notasCompletas) sum += n;
+        for (double n : notasCompletas) suma += n;
         return (suma / 3.0) >= 14.0;
     }
 };
 
 class Bootcamp : public ProgramaAcademico {
 public:
-    Bootcamp() : ProgramaAcademico ("Bootcamp") {}
+    Bootcamp() : ProgramaAcademico("Bootcamp") {}
 
     bool evaluarAprobacion(const vector<double>& notas) const override {
         vector<double> notasCompletas = notas;
@@ -92,7 +92,7 @@ public:
         for (double n : notasCompletas) {
             if (n < 14.0) return false;
         }
-        reuturn true;
+        return true;
     }
 };
 
@@ -108,50 +108,51 @@ public:
     Alumno(string cedula, string nombre, string correo, ProgramaAcademico* programa)
         : Persona(cedula, nombre, correo), programa(programa) {}
 
-        ~Alumno() {
-            delete programa; // liberar memoria
-        }
-        
-        Programa Academico* getPrograma() const { return programa; }
-        const vector<double>& getNotas() const { return notas; }
-        
-        bool agregarNOta(double nota) {
-            if (notas.size() < 3) {
+    ~Alumno() {
+        delete programa; // Liberar memoria
+    }
+
+    ProgramaAcademico* getPrograma() const { return programa; }
+    const vector<double>& getNotas() const { return notas; }
+
+    bool agregarNota(double nota) {
+        if (notas.size() < 3) {
             notas.push_back(nota);
             return true;
         }
-        return false;   
+        return false;
     }
-    
+
     bool eliminarUltimaNota(double& notaRemovida) {
-        if (!notas.esmpty()) {
+        if (!notas.empty()) {
             notaRemovida = notas.back();
             notas.pop_back();
             return true;
         }
         return false;
     }
+
     bool estaAprobado() const {
         return programa->evaluarAprobacion(notas);
     }
 
     string toString() const {
         vector<double> notasCompletas = notas;
-        whie (notasCompletas.size() < 3) {
-            notasCompletas.push_back(0.0);            
+        while (notasCompletas.size() < 3) {
+            notasCompletas.push_back(0.0);
         }
-    stringstream ss;
-    for (size_t i = 0; i < notasCompletas.size(); i++) {
-        double n = notasCompletas[i];
-        if (n ==(int)n) {
-            ss << (int)n;            
-        } else {
-            ss << fixed << setprecision(1) << n;
+        stringstream ss;
+        for (size_t i = 0; i < notasCompletas.size(); i++) {
+            double n = notasCompletas[i];
+            if (n == (int)n) {
+                ss << (int)n;
+            } else {
+                ss << fixed << setprecision(1) << n;
+            }
+            if (i < notasCompletas.size() - 1) ss << ",";
         }
-        if(i < notasCompletas.size() -1) ss <<",";
-    }     
-    string estado = estaAprobado() ? "APROBADO" : "EN PROCESO / REPROBADO";
-    return "[Alumno] " + Persona::toString() + " | Programa: " + programa->getNombre() +
+        string estado = estaAprobado() ? "APROBADO" : "EN PROCESO / REPROBADO";
+        return "[Alumno] " + Persona::toString() + " | Programa: " + programa->getNombre() +
                " | Notas: [" + ss.str() + "] | Estatus: " + estado;
     }
 };
@@ -159,7 +160,6 @@ public:
 // ==============================================================================
 // CLASE: Profesor
 // ==============================================================================
-
 class Profesor : public Persona {
 private:
     string especialidad;
@@ -204,7 +204,7 @@ private:
         if (tipo.find("bootcamp") != string::npos) return new Bootcamp();
         return new Curso();
     }
-    
+
 public:
     SistemaSGA() {
         cargarDatos();
@@ -220,14 +220,14 @@ public:
         ifstream fAlumnos(ARCH_ALUMNOS);
         if (fAlumnos.is_open()) {
             string linea;
-             while (getline(fAlumnos, linea)) {
+            while (getline(fAlumnos, linea)) {
                 if (linea.empty()) continue;
                 stringstream ss(linea);
                 string cedula, nombre, correo, tipoProg;
-                
-                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') && 
+
+                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') &&
                     getline(ss, correo, ',') && getline(ss, tipoProg, ',')) {
-                    
+
                     ProgramaAcademico* prog = instanciarPrograma(tipoProg);
                     Alumno* alumno = new Alumno(cedula, nombre, correo, prog);
 
@@ -253,11 +253,11 @@ public:
                 if (linea.empty()) continue;
                 stringstream ss(linea);
                 string cedula, nombre, correo, especialidad, materia;
-                
-                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') && 
+
+                if (getline(ss, cedula, ',') && getline(ss, nombre, ',') &&
                     getline(ss, correo, ',') && getline(ss, especialidad, ',') &&
                     getline(ss, materia)) {
-                    
+
                     Profesor* prof = new Profesor(cedula, nombre, correo, especialidad, materia);
                     profesores.push_back(prof);
                 }
@@ -275,7 +275,7 @@ public:
                 while (notasCompletas.size() < 3) {
                     notasCompletas.push_back(0.0);
                 }
-                fAlumnos << a->getCedula() << "," << a->getNombre() << "," 
+                fAlumnos << a->getCedula() << "," << a->getNombre() << ","
                          << a->getCorreo() << "," << a->getPrograma()->getNombre();
                 for (double n : notasCompletas) {
                     fAlumnos << ",";
@@ -291,8 +291,8 @@ public:
         ofstream fProf(ARCH_PROFESORES);
         if (fProf.is_open()) {
             for (const auto& p : profesores) {
-                fProf << p->getCedula() << "," << p->getNombre() << "," 
-                      << p->getCorreo() << "," << p->getEspecialidad() << "," 
+                fProf << p->getCedula() << "," << p->getNombre() << ","
+                      << p->getCorreo() << "," << p->getEspecialidad() << ","
                       << p->getMateria() << "\n";
             }
             fProf.close();
@@ -313,7 +313,7 @@ public:
         }
 
         cout << "Nombre Completo: ";
-        getline(cin,nombre);
+        getline(cin, nombre);
         cout << "Correo Electrónico: ";
         getline(cin, correo);
 
@@ -339,24 +339,28 @@ public:
         Alumno* nuevo = new Alumno(cedula, nombre, correo, prog);
         alumnos.push_back(nuevo);
         guardarTodo();
-        cout <<"Alumno registrado exitosament.\n";
+        cout << "Alumno registrado exitosamente.\n";
     }
-    
+
     void registrarProfesor() {
-        cout <<"\n--- Registrar Profesor ---\n";
+        cout << "\n--- Registrar Profesor ---\n";
+        string cedula, nombre, correo, especialidad, materia;
         cout << "Cédula / ID: ";
         getline(cin, cedula);
 
-        for (cosnt auto& p : profesores) {
+        for (const auto& p : profesores) {
             if (p->getCedula() == cedula) {
                 cout << "Error: Ya existe un profesor con esa cédula.\n";
                 return;
             }
-        }        
+        }
+
         cout << "Nombre Completo: ";
         getline(cin, nombre);
         cout << "Correo Electrónico: ";
         getline(cin, correo);
+        cout << "Especialidad: ";
+        getline(cin, especialidad);
         cout << "Materia Asignada: ";
         getline(cin, materia);
 
@@ -364,10 +368,11 @@ public:
         profesores.push_back(nuevo);
         guardarTodo();
         cout << "Profesor registrado exitosamente.\n";
-    
-        void registrarNota() {
-            cout << "\n--- Registrar Notas ---\n";
-            cout << "Ingrese la Cédula del Alumno: ";
+    }
+
+    void registrarNota() {
+        cout << "\n--- Registrar Notas ---\n";
+        cout << "Ingrese la Cédula del Alumno: ";
         string cedula;
         getline(cin, cedula);
 
@@ -379,7 +384,200 @@ public:
             }
         }
 
+        if (!alumno) {
+            cout << "Error: Alumno no encontrado.\n";
+            return;
+        }
 
+        if (alumno->getNotas().size() >= 3) {
+            cout << "Error: El alumno ya tiene sus 3 notas registradas.\n";
+            return;
+        }
 
+        cout << "Ingrese calificación (0-20) para " << alumno->getNombre() << ": ";
+        string notaStr;
+        getline(cin, notaStr);
+        try {
+            double nota = stod(notaStr);
+            if (nota < 0 || nota > 20) {
+                cout << "Error: La nota debe estar entre 0 y 20.\n";
+                return;
+            }
 
+            if (alumno->agregarNota(nota)) {
+                pilaDeshacerNotas.push({alumno->getCedula(), nota});
+                guardarTodo();
+                cout << "Nota " << nota << " guardada correctamente.\n";
+            }
+        } catch (...) {
+            cout << "Error: Ingrese un valor numérico válido.\n";
+        }
+    }
 
+    void deshacerUltimaNota() {
+        cout << "\n--- Deshacer Último Registro ---\n";
+        if (pilaDeshacerNotas.empty()) {
+            cout << "No hay acciones de notas recientes para deshacer en esta sesión.\n";
+            return;
+        }
+
+        RegistroNota ultimo = pilaDeshacerNotas.top();
+        pilaDeshacerNotas.pop();
+
+        Alumno* alumno = nullptr;
+        for (auto a : alumnos) {
+            if (a->getCedula() == ultimo.cedulaAlumno) {
+                alumno = a;
+                break;
+            }
+        }
+
+        double notaRemovida = 0;
+        if (alumno && alumno->eliminarUltimaNota(notaRemovida)) {
+            guardarTodo();
+            cout << "Se ha removido la última nota (" << notaRemovida << ") del alumno " << alumno->getNombre() << ".\n";
+        } else {
+            cout << "No se pudo completar la operación.\n";
+        }
+    }
+
+    void generarColaCertificados() {
+        cout << "\n--- Generar Cola de Certificados ---\n";
+        queue<Alumno*> colaGraduandos;
+
+        for (auto a : alumnos) {
+            if (a->estaAprobado()) {
+                colaGraduandos.push(a);
+            }
+        }
+
+        if (colaGraduandos.empty()) {
+            cout << "No hay alumnos aprobados actualmente.\n";
+            return;
+        }
+
+        ofstream pw(ARCH_CERTIFICADOS);
+        if (pw.is_open()) {
+            pw << "=========================================\n";
+            pw << "REPORTE DE CERTIFICADOS PENDIENTES\n";
+            pw << "=========================================\n";
+            pw << "Total de graduandos en cola: " << colaGraduandos.size() << "\n";
+
+            int contador = 1;
+            while (!colaGraduandos.empty()) {
+                Alumno* g = colaGraduandos.front();
+                colaGraduandos.pop(); // Procesamiento FIFO
+
+                vector<double> notasCompletas = g->getNotas();
+                while (notasCompletas.size() < 3) {
+                    notasCompletas.push_back(0.0);
+                }
+                double suma = 0;
+                for (double n : notasCompletas) suma += n;
+                double promedio = suma / 3.0;
+
+                pw << contador << ". [" << g->getCedula() << "] " << g->getNombre() << "\n";
+                pw << "- Programa: " << g->getPrograma()->getNombre() << "\n";
+                pw << fixed << setprecision(1) << "- Promedio Final: " << promedio << "\n";
+
+                string estatus = "APROBADO";
+                if (dynamic_cast<Bootcamp*>(g->getPrograma())) {
+                    estatus = "APROBADO (Cumple regla de ninguna nota < 14)";
+                }
+                pw << "- Estatus: " << estatus << "\n";
+                contador++;
+            }
+            pw << "=========================================\n";
+            pw << "- Fin del reporte - Generado por SGA-DO *\n";
+            pw.close();
+            cout << "Reporte generado exitosamente en '" << ARCH_CERTIFICADOS << "'.\n";
+        } else {
+            cout << "Error al escribir el archivo de certificados.\n";
+        }
+    }
+
+    void mostrarReporteGeneral() {
+        cout << "\n" << string(50, '=') << "\n";
+        cout << "Reporte General - Diplomados Online\n";
+        cout << string(50, '=') << "\n";
+
+        cout << "\n[PROFESORES]\n";
+        if (profesores.empty()) {
+            cout << "Sin registros.\n";
+        }
+        for (const auto& p : profesores) {
+            cout << "- " << p->getCedula() << "," << p->getNombre() << ","
+                 << p->getCorreo() << "," << p->getEspecialidad() << "," << p->getMateria() << "\n";
+        }
+
+        cout << "\n[ALUMNOS]\n";
+        if (alumnos.empty()) {
+            cout << "Sin registros.\n";
+        }
+        for (const auto& a : alumnos) {
+            vector<double> notasCompletas = a->getNotas();
+            while (notasCompletas.size() < 3) {
+                notasCompletas.push_back(0.0);
+            }
+            stringstream sb;
+            for (size_t i = 0; i < notasCompletas.size(); i++) {
+                double n = notasCompletas[i];
+                if (n == (int)n) sb << (int)n;
+                else sb << fixed << setprecision(1) << n;
+                if (i < notasCompletas.size() - 1) sb << ",";
+            }
+            cout << "- " << a->getCedula() << "," << a->getNombre() << ","
+                 << a->getCorreo() << "," << a->getPrograma()->getNombre() << "," << sb.str() << "\n";
+        }
+        cout << string(50, '=') << "\n";
+    }
+
+    void iniciar() {
+        while (true) {
+            cout << "\n" << string(50, '=') << "\n";
+            cout << "SGA-DO: SISTEMA DIPLOMADOSONLINE\n";
+            cout << string(50, '=') << "\n";
+            cout << "1. Registrar Alumno\n";
+            cout << "2. Registrar Profesor\n";
+            cout << "3. Registrar Notas a un Alumno\n";
+            cout << "4. Deshacer Último Registro de Nota\n";
+            cout << "5. Generar Cola de Certificados\n";
+            cout << "6. Mostrar Reporte General\n";
+            cout << "7. Salir\n";
+            cout << string(50, '=') << "\n";
+            cout << "Seleccione una opción (1-7): ";
+
+            string opcion;
+            getline(cin, opcion);
+
+            if (opcion == "1") {
+                registrarAlumno();
+            } else if (opcion == "2") {
+                registrarProfesor();
+            } else if (opcion == "3") {
+                registrarNota();
+            } else if (opcion == "4") {
+                deshacerUltimaNota();
+            } else if (opcion == "5") {
+                generarColaCertificados();
+            } else if (opcion == "6") {
+                mostrarReporteGeneral();
+            } else if (opcion == "7") {
+                guardarTodo();
+                cout << "\nGuardando y saliendo de forma segura. ¡Hasta pronto!\n";
+                return;
+            } else {
+                cout << "Opción inválida. Intente de nuevo.\n";
+            }
+        }
+    }
+};
+
+// ==============================================================================
+// FUNCIÓN PRINCIPAL MAIN
+// ==============================================================================
+int main() {
+    SistemaSGA sistema;
+    sistema.iniciar();
+    return 0;
+}
